@@ -81,6 +81,7 @@ class User:
 
 class Book:
 
+
     def __init__(self, title, author, genre):
         self.title = title
         self.author = author
@@ -125,7 +126,6 @@ class Book:
     def _set_rating(self):
         self._rating =int(mean(self.scores))
 
-
     #id property
     id = property(
         fget = _get_id,
@@ -161,6 +161,54 @@ class Book:
         doc= 'The rating property'
     )
 
+class Review:
+    id  = 0
+    def __init__(self, score, comment, user):
+        self._score = score
+        self._comment = comment
+        self.user = user
+    #id methods
+    def _get_id(self):
+        return self._id
+    def _set_id(self):
+        if self._id == None:
+            self._id = 0
+        else:
+            self._id += 1
+        return self._id
+    #score methods
+    def _get_score(self):
+        return self.score
+    def _set_score(self, s):
+        if type(s) != (int) or s > 10:
+            raise ValueError('Please enter a number from 0  - 10')
+        else:
+             self._score = s
+    #comment methods
+    def _get_comment(self):
+        return self._comment
+    def _set_comment(self, c):
+        if type(c) != str or c =='' or c == ' ':
+            raise AttributeError('Please enter a comment.')
+        else:
+            self._comment = c
+
+    #id property
+    id = property(
+        fget = _get_id,
+        fset = _set_id,
+        doc = 'The id property'
+        )
+    #score property
+    score = property(
+        fget= _get_score,
+        fset= _set_score
+    )
+    #comment property
+    comment = property(
+        fget= _get_comment,
+        fset= _set_comment
+    )
 
 
 
