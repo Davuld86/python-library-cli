@@ -1,19 +1,20 @@
 from statistics import mean
 class User:
-    id = 1
     log =[]
     users = {}
+    id = 0
 
     def __init__(self, username, password):
+        self.id = User.add_id()
         self.books = []
-        self._username = username
-        self._password = password
+        self.username = username
+        self.password = password
         User.add_new_user(username,password)
         User.append_to_log()
 
     def checkout(self,book):
         self.books.append(book.title)
-        book.check_out(self.id)
+        book.checkout(self.id)
 
     def return_book(self, book):
         self.books.remove(book.title)
@@ -25,45 +26,31 @@ class User:
     @classmethod
     def append_to_log(self):
         self.log.append(self.username)
-
-    # id property methods
-    def _get_id(self):
-        return self._id
-
-    def _set_id(self):
-        if self._id == None:
-            self._id = 0
-        else:
-            self._id += 1
-        return self._id
+    @classmethod
+    def add_id(self):
+         self.id += 1
+         return self.id
 
     # username methods
     def _get_username(self):
         return self._username
 
     def _set_username(self, input):
-        if type(input) != str:
+        if input in User.users.keys():
+            raise AttributeError(f'Username: "{input}" is already taken!')
+        elif type(input) != str:
             raise ValueError('Please input a valid username.')
-        elif self._username in self.users.keys:
-            print(f'Username already taken!')
         else:
             self._username = input
     # password methods
     def _get_password(self):
-        raise AttributeError('Passwords are secret!')
+        print('Passwords are secret!')
 
     def _set_password(self, p):
         if type(p) != str:
             raise ValueError('Please input a valid password!')
         else:
             self._password = p
-
-    #id property
-    id = property(
-        fget = _get_id,
-        fset = _set_id,
-        doc = 'The id property'
-        )
 
     #username property
     username = property(
@@ -80,24 +67,43 @@ class User:
     )
 
 class Book:
-
-
+    id = -1
     def __init__(self, title, author, genre):
+        self.id = Book.add_id()
         self.title = title
         self.author = author
         self.genre = genre
         self.stocked = True
-        self._scores = []
+        self.scores = []
+        self.reviews = []
+        self.rating = self.get_rating()
 
-    #id methods
-    def _get_id(self):
-        return self._id
-    def _set_id(self):
-        if self._id == None:
-            self._id = 0
+
+
+    def get_rating(self):
+        if self.scores==[]:
+            self.rating = 0
         else:
-            self._id += 1
-        return self._id
+            print(self.scores, len(self.scores))
+            self.rating = round(sum(self.scores)/len(self.scores), 1)
+        return self.rating
+    def checkout(self,id):
+        self.stocked = False
+        self.owner = id
+
+    def restock(self):
+        self.stocked = True
+        self.owner = 0
+
+    def add_score(self,review):
+        self.scores.append(review.score)
+        self.reviews.append(review.comment)
+        self.get_rating()
+
+    @classmethod
+    def add_id(self):
+        self.id += 1
+        return self.id
 
     #owner methods
     def _get_owner(self):
@@ -105,33 +111,6 @@ class Book:
     def _set_owner(self, o):
         self._owner = o
 
-    #scores methods
-    def _get_scores(self):
-        return self._scores
-    def _set_scores(self, sc):
-        self._scores.append(sc)
-
-     #reviews methods
-    def _get_reviews(self):
-        return self._reviews
-    def _set_reviews(self,rev):
-        if rev == '' or rev == ' ':
-            raise AttributeError('Please input a review.')
-        else:
-            self._reviews.append(rev)
-
-    #rating methods
-    def _get_rating(self):
-        return self._rating
-    def _set_rating(self):
-        self._rating =int(mean(self.scores))
-
-    #id property
-    id = property(
-        fget = _get_id,
-        fset = _set_id,
-        doc = 'The id property'
-        )
 
     #owner property
     owner = property(
@@ -140,45 +119,27 @@ class Book:
         doc= 'The owner property'
     )
 
-    #scores property
-    scores = property(
-        fget= _get_scores,
-        fset= _set_scores,
-        doc= "The scores property"
-    )
 
-    #reviews property
-    reviews = property(
-        fget= _get_reviews,
-        fset = _set_reviews,
-        doc = 'The reviews property'
-    )
 
-    #rating property
-    rating = property(
-        fget= _get_rating,
-        fset= _set_rating,
-        doc= 'The rating property'
-    )
 
 class Review:
-    id  = 0
-    def __init__(self, score, comment, user):
-        self._score = score
-        self._comment = comment
-        self.user = user
-    #id methods
-    def _get_id(self):
-        return self._id
-    def _set_id(self):
-        if self._id == None:
-            self._id = 0
-        else:
-            self._id += 1
-        return self._id
+    id = -1
+    def __init__(self, score, comment, user, book):
+        self.id  = Review.add_id()
+        self.score = score
+        self.comment = comment
+        self.user = user.id
+        self.book = book.id
+        book.add_score(self)
+
+    @classmethod
+    def add_id(self):
+        self.id += 1
+        return self.id
+
     #score methods
     def _get_score(self):
-        return self.score
+        return self._score
     def _set_score(self, s):
         if type(s) != (int) or s > 10:
             raise ValueError('Please enter a number from 0  - 10')
@@ -193,12 +154,6 @@ class Review:
         else:
             self._comment = c
 
-    #id property
-    id = property(
-        fget = _get_id,
-        fset = _set_id,
-        doc = 'The id property'
-        )
     #score property
     score = property(
         fget= _get_score,
@@ -211,5 +166,37 @@ class Review:
     )
 
 
+david = User('david','1234')
+steve = User('steve', '1234')
 
+the_giver = Book('The Giver', 'Lois Lowry', 'Sci-Fi')
+redwall = Book('Redwall', 'Brian Jaques', 'Fantasy')
+fightclub = Book ("Fight Club", 'Chuck Palahniuk', 'Novel')
+
+tgr = Review(4,"It's good", david, the_giver)
+rr = Review(3,'Fantastic',steve,redwall)
+rr2 = Review(2,'Fantastic',steve,redwall)
+fcr = Review(5,'Mental illness bad', david, fightclub)
+
+print(f'User IDs: {david.id}, {steve.id}\n',
+      f'Book IDs: {the_giver.id}, {redwall.id},{fightclub.id}\n',
+      f'Review IDs: {tgr.id}, {rr.id}, {fcr.id}\n'
+      )
+
+david.checkout(fightclub)
+steve.checkout(redwall)
+
+print(f'{fightclub.title} owner: {fightclub.owner} their name is {list(User.users.keys())[fightclub.owner-1]} \n'
+      f'{redwall.title} owner: {redwall.owner} their name is {list(User.users.keys())[redwall.owner-1]}\n')
+
+#Note: to reference the book's owner's name: list(User.users.keys())[BOOKHERE.owner -1]
+
+david.return_book(fightclub)
+print(f'{fightclub.title} owner: {fightclub.owner} in stock?: {fightclub.stocked}')
+steve.checkout(fightclub)
+print(f'{fightclub.title} owner: {fightclub.owner} in stock?: {fightclub.stocked}')
+print(steve.password)
+print(User.users)
+
+print(redwall.scores, redwall.reviews, redwall.rating)
 
