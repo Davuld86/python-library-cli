@@ -1,4 +1,3 @@
-from statistics import mean
 class User:
     log =[]
     users = {}
@@ -84,7 +83,6 @@ class Book:
         if self.scores==[]:
             self.rating = 0
         else:
-            print(self.scores, len(self.scores))
             self.rating = round(sum(self.scores)/len(self.scores), 1)
         return self.rating
     def checkout(self,id):
@@ -118,9 +116,6 @@ class Book:
         fset = _set_owner,
         doc= 'The owner property'
     )
-
-
-
 
 class Review:
     id = -1
@@ -165,38 +160,4 @@ class Review:
         fset= _set_comment
     )
 
-
-david = User('david','1234')
-steve = User('steve', '1234')
-
-the_giver = Book('The Giver', 'Lois Lowry', 'Sci-Fi')
-redwall = Book('Redwall', 'Brian Jaques', 'Fantasy')
-fightclub = Book ("Fight Club", 'Chuck Palahniuk', 'Novel')
-
-tgr = Review(4,"It's good", david, the_giver)
-rr = Review(3,'Fantastic',steve,redwall)
-rr2 = Review(2,'Fantastic',steve,redwall)
-fcr = Review(5,'Mental illness bad', david, fightclub)
-
-print(f'User IDs: {david.id}, {steve.id}\n',
-      f'Book IDs: {the_giver.id}, {redwall.id},{fightclub.id}\n',
-      f'Review IDs: {tgr.id}, {rr.id}, {fcr.id}\n'
-      )
-
-david.checkout(fightclub)
-steve.checkout(redwall)
-
-print(f'{fightclub.title} owner: {fightclub.owner} their name is {list(User.users.keys())[fightclub.owner-1]} \n'
-      f'{redwall.title} owner: {redwall.owner} their name is {list(User.users.keys())[redwall.owner-1]}\n')
-
 #Note: to reference the book's owner's name: list(User.users.keys())[BOOKHERE.owner -1]
-
-david.return_book(fightclub)
-print(f'{fightclub.title} owner: {fightclub.owner} in stock?: {fightclub.stocked}')
-steve.checkout(fightclub)
-print(f'{fightclub.title} owner: {fightclub.owner} in stock?: {fightclub.stocked}')
-print(steve.password)
-print(User.users)
-
-print(redwall.scores, redwall.reviews, redwall.rating)
-
