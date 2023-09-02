@@ -9,7 +9,7 @@ class User:
         self.username = username
         self.password = password
         User.add_new_user(username,password)
-        User.append_to_log()
+
 
     def checkout(self,book):
         self.books.append(book.title)
@@ -21,10 +21,10 @@ class User:
 
     @classmethod
     def add_new_user(self,username, password):
-        self.users.update({username: password})
+        self.users.update({username:(self.id,password)})
     @classmethod
-    def append_to_log(self):
-        self.log.append(self.username)
+    def append_to_log(self, input):
+        self.log.append(input)
     @classmethod
     def add_id(self):
          self.id += 1
@@ -64,6 +64,8 @@ class User:
         fset = _set_password,
         doc = 'The password property'
     )
+
+
 
 class Book:
     id = -1
@@ -119,11 +121,11 @@ class Book:
 
 class Review:
     id = -1
-    def __init__(self, score, comment, user, book):
+    def __init__(self, score, comment, user_id, book):
         self.id  = Review.add_id()
         self.score = score
         self.comment = comment
-        self.user = user.id
+        self.user = user_id
         self.book = book.id
         book.add_score(self)
 
@@ -161,3 +163,10 @@ class Review:
     )
 
 #Note: to reference the book's owner's name: list(User.users.keys())[BOOKHERE.owner -1]
+
+david = User('david', '1234')
+
+
+User.append_to_log(User.users['david'][0])
+
+print(User.log[0])

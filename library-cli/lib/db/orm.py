@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, delete
 from sqlalchemy import ForeignKey, Table, Column, Integer, String, Boolean
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import DeclarativeBase
@@ -30,6 +30,7 @@ class Book(Base):
     reviews = relationship('Review', back_populates= 'books')
 
 class Review(Base):
+    __tablename__ = 'reviews'
     id = Column(Integer, primary_key=True)
     score = Column(Integer)
     comment = Column(String)
@@ -49,6 +50,15 @@ def save_books(session, book):
 def save_reviews(session, review):
     session.add_all([review])
     session.commit()
+
+def delete_account(session, user):
+    session.delete(session.query(User).filter(User.id == user.id).one())
+
+def delete_review(session, review):
+    session.delete(session.query(Review).filter(Review.id == review.id).one())
+
+def edit_review(session, review, score, comment):
+    session.query(Review.filter(Review.id == review.id).update({'score': score, 'comment': comment}))
 
 def get_all_users(session):
     return[user.username for user in session.query(User).all()]
@@ -81,14 +91,17 @@ def get_all_user_reviews(session, user):
 def find_reviews_by_book(session, book):
     return[(review.score, review.comment) for review in session.query(Review).filter(Book.id == book.id).all()]
 
+
 def checkout(session, user, book):
-    return session.query(Book).filter(Book.id == book.id).update({'owner': user.id, 'stocked':False})
+    session.query(Book).filter(Book.id == book.id).update({'owner': user.id, 'stocked':False})
+    session.commit()
 
 def restock(session,book):
-    return session.query(Book).filter(Book.id == book.id).update({'owner': None, 'stocked': True})
+     session.query(Book).filter(Book.id == book.id).update({'owner': None, 'stocked': True})
 
 engine = create_engine('sqlite:///library.db', echo= True)
 Base.metadata.create_all(engine)
 
 Session = sessionmaker(bind=engine)
 session = Session()
+
