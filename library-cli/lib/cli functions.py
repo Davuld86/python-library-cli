@@ -1,5 +1,10 @@
 from db.objects import *
 from db.orm import *
+engine = create_engine('sqlite:///library.sql', echo= True)
+Base.metadata.create_all(engine)
+
+Session = sessionmaker(bind=engine)
+session = Session()
 
 # this helps to easily keep track of data
 class Current():
@@ -11,6 +16,12 @@ class Current():
         self.review = review
         self.review_id = review_id
 c = Current()
+
+#need a fctn that grabs all the previouis data
+def initialization():
+    print(get_all_books(session))
+
+
 
 # checks the username & password against the dictionary of users to login
 def login():
@@ -47,7 +58,7 @@ def register():
         print('Please enter a valid password.')
         return 1
     else:
-         username= User(username, password)
+         username= User_db(username=username, password=password)
          save_users(username)
     print('Thank you for making an account!')
 
@@ -212,5 +223,9 @@ def search_reviews():
             return 1
 
 
+#-----------------------TESTING ZONE DO NOT CROSS-----------------------------------
 
 
+register()
+login()
+print(c.user_id, c.user)

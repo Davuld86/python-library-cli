@@ -7,16 +7,23 @@ from sqlalchemy.orm import sessionmaker
 class Base(DeclarativeBase):
     pass
 
-class User(Base):
+engine = create_engine('sqlite:///library.sql', echo= True)
+Base.metadata.create_all(engine)
+
+Session = sessionmaker(bind=engine)
+session = Session()
+
+
+class User_db(Base):
     __tablename__ = 'users'
 
     id = Column(Integer, primary_key= True)
     username = Column(String)
     password = Column(String)
-    books = relationship('Book', back_populates='users')
-    reviews = relationship('Review', back_populates= 'users')
+    books = relationship('Book_db', back_populates='owner_id')
+    reviews = relationship('Review_db', back_populates= 'user_id')
 
-class Book(Base):
+class Book_db(Base):
     __tablename__ = 'books'
 
     id = Column(Integer, primary_key=True)
@@ -26,10 +33,10 @@ class Book(Base):
     stocked = Column(Boolean)
     owner_id = Column(Integer,ForeignKey('users.id'))
     rating = Column(Integer)
-    owner = relationship('User', back_populates= 'book_owners')
-    reviews = relationship('Review', back_populates= 'books')
+    owner = relationship('User_db', back_populates= 'book_owners')
+    reviews = relationship('Review_db', back_populates= 'books')
 
-class Review(Base):
+class Review_db(Base):
     __tablename__ = 'reviews'
     id = Column(Integer, primary_key=True)
     score = Column(Integer)
@@ -37,8 +44,8 @@ class Review(Base):
     book_title = Column(String)
     user_id = Column(Integer, ForeignKey('users.id'))
     book_id = Column(Integer, ForeignKey('books.id'))
-    users = relationship('User', back_populates='user_reviews')
-    books =relationship('Book', back_populates='book_reviews')
+    users = relationship('User_db', back_populates='user_reviews')
+    books =relationship('Book_db', back_populates='book_reviews')
 
 def save_users(session, users):
     session.add_all([users])
@@ -89,9 +96,9 @@ def get_all_user_reviews(session, user):
                                                                     ).filter(Review.user_id == user.id
                                                                     ).filter(Review.book_id == Book.id
                                                                     ).all()]
+
 def find_reviews_by_book(session, book):
     return[(review.score, review.comment) for review in session.query(Review).filter(Book.id == book.id).all()]
-
 
 def checkout(session, user, book):
     session.query(Book).filter(Book.id == book.id).update({'owner': user.id, 'stocked':False})

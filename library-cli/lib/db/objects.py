@@ -162,4 +162,3 @@ class Review:
     )
 
 #Note: How to find name of book's owner: list(User.users.keys())[BOOKHERE.owner -1])
-
