@@ -65,8 +65,6 @@ class User:
         doc = 'The password property'
     )
 
-
-
 class Book:
     id = -1
     def __init__(self, title, author, genre):
@@ -127,6 +125,7 @@ class Review:
         self.comment = comment
         self.user = user_id
         self.book = book.id
+        self.book_title = book.title
         book.add_score(self)
 
     @classmethod
@@ -162,11 +161,5 @@ class Review:
         fset= _set_comment
     )
 
-#Note: to reference the book's owner's name: list(User.users.keys())[BOOKHERE.owner -1]
+#Note: How to find name of book's owner: list(User.users.keys())[BOOKHERE.owner -1])
 
-david = User('david', '1234')
-
-
-User.append_to_log(User.users['david'][0])
-
-print(User.log[0])

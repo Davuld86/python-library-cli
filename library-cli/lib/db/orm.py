@@ -34,6 +34,7 @@ class Review(Base):
     id = Column(Integer, primary_key=True)
     score = Column(Integer)
     comment = Column(String)
+    book_title = Column(String)
     user_id = Column(Integer, ForeignKey('users.id'))
     book_id = Column(Integer, ForeignKey('books.id'))
     users = relationship('User', back_populates='user_reviews')
@@ -69,13 +70,13 @@ def get_all_reviews(session):
     return [review for review in session.query(Review).all()]
 
 def find_by_title(session, title):
-    return [book.title for book in session.query(Book).filter(Book.title == title).all()]
+    return [book.title for book in session.query(Book).filter(Book.title.lower() == title.lower()).all()]
 
 def find_by_author(session, author):
-    return[book.title for book in session.query(Book).filter(Book.author == author).all()]
+    return[book.title for book in session.query(Book).filter(Book.author.lower() == author.lower()).all()]
 
 def find_by_genre(session, genre):
-  return [book.title for book in session.query(Book).filter(Book.genre == genre).all()]
+  return [book.title for book in session.query(Book).filter(Book.genre.lower() == genre.lower()).all()]
 
 def find_by_owner(session, owner):
     return [book.title for book in session.query(Book).filter(Book.owner == owner).all()]
@@ -99,9 +100,4 @@ def checkout(session, user, book):
 def restock(session,book):
      session.query(Book).filter(Book.id == book.id).update({'owner': None, 'stocked': True})
 
-engine = create_engine('sqlite:///library.db', echo= True)
-Base.metadata.create_all(engine)
-
-Session = sessionmaker(bind=engine)
-session = Session()
 
