@@ -21,8 +21,6 @@ c = Current()
 def initialization():
     print(get_all_books(session))
 
-
-
 # checks the username & password against the dictionary of users to login
 def login():
     print('*** Login type "exit" to quit ***')
@@ -32,12 +30,11 @@ def login():
     password = input('Enter password: ')
     if password == 'exit':
         return 0
-    if username not in User.users.keys():
-        print('Username/Password incorrect')
-    elif User.users[username][1] == password:
-        print(f'Welcome {username}!')
-        User.append_to_log(User.users[username][0])
-        c.user_id = User.users[username][0]
+    info = find_user(session, username)
+    if info[0]==username and info[1] == password:
+        print(f'Welcome back, {username}!')
+        User.append_to_log(info[2])
+        c.user_id = info[2]
         return 1
     else:
         print('Username/Password incorrect')
@@ -59,7 +56,7 @@ def register():
         return 1
     else:
          username= User_db(username=username, password=password)
-         save_users(username)
+         save_users(session,username)
     print('Thank you for making an account!')
 
 #changes the current book to this one
@@ -224,8 +221,4 @@ def search_reviews():
 
 
 #-----------------------TESTING ZONE DO NOT CROSS-----------------------------------
-
-
-register()
 login()
-print(c.user_id, c.user)

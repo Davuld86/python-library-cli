@@ -13,15 +13,14 @@ Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 session = Session()
 
-
 class User_db(Base):
     __tablename__ = 'users'
 
     id = Column(Integer, primary_key= True)
     username = Column(String)
     password = Column(String)
-    books = relationship('Book_db', back_populates='owner_id')
-    reviews = relationship('Review_db', back_populates= 'user_id')
+    user_books = relationship('Book_db', back_populates='owner')
+    user_reviews = relationship('Review_db', back_populates= 'users')
 
 class Book_db(Base):
     __tablename__ = 'books'
@@ -30,11 +29,11 @@ class Book_db(Base):
     title = Column(String)
     author = Column(String)
     genre = Column(String)
-    stocked = Column(Boolean)
-    owner_id = Column(Integer,ForeignKey('users.id'))
+    stocked = Column(Boolean,default=True)
+    owner_id = Column(Integer,ForeignKey('users.id'), default=0)
     rating = Column(Integer)
-    owner = relationship('User_db', back_populates= 'book_owners')
-    reviews = relationship('Review_db', back_populates= 'books')
+    owner = relationship('User_db', back_populates= 'user_books')
+    book_reviews = relationship('Review_db', back_populates= 'books')
 
 class Review_db(Base):
     __tablename__ = 'reviews'
@@ -47,64 +46,82 @@ class Review_db(Base):
     users = relationship('User_db', back_populates='user_reviews')
     books =relationship('Book_db', back_populates='book_reviews')
 
+#SAVE FUNCTIONS
+#saves and commits users to DB (tested)
 def save_users(session, users):
     session.add_all([users])
     session.commit()
-
+#saves and commits books to DB (tested)
 def save_books(session, book):
     session.add_all([book])
     session.commit()
-
+#saves and commits reviews to DB (tested)
 def save_reviews(session, review):
     session.add_all([review])
     session.commit()
 
-def delete_account(session, user):
-    session.delete(session.query(User).filter(User.id == user.id).one())
-
-def delete_review(session, review):
-    session.delete(session.query(Review).filter(Review.id == review.id).one())
-
-def edit_review(session, review, score, comment):
-    session.query(Review.filter(Review.id == review.id).update({'score': score, 'comment': comment}))
-
+#GET FUNCTIONS
+#gets the username and password of ALL users (tested)
 def get_all_users(session):
-    return[user.username for user in session.query(User).all()]
-
+    return[(user.username, user.password) for user in session.query(User_db).all()]
+#gets a specific user, DOES NOT output a list (tested)
+def find_user(session, name):
+    user = session.query(User_db).filter(User_db.username == name).one()
+    return(user.username, user.password, user.id)
+#gets attributes of ALL books (tested)
 def get_all_books(session):
-    return [book.title for book in session.query(Book).all()]
+    return [(book.title, book.author, book.genre, book.rating) for book in session.query(Book_db).all()]
+#gets all books that are in stock (tested)
+def get_books_in_stock(session):
+    return[(book.title, book.author, book.genre, book.rating) for book in session.query(Book_db).filter(Book_db.stocked == True).all()]
+#gets attributes of ALL reviews (tested)
 def get_all_reviews(session):
-    return [review for review in session.query(Review).all()]
-
+    return [(review.book_title, review.score, review.comment) for review in session.query(Review_db).all()]
+# gets all reviews based on the user's id (tested)
+def get_all_user_reviews(session, user_id):
+    return [(review.book_title, review.score,review.comment) for review in session.query(Review_db).filter(Review_db.user_id == user_id).all()]
+# tested
 def find_by_title(session, title):
-    return [book.title for book in session.query(Book).filter(Book.title.lower() == title.lower()).all()]
-
+    return [book.title for book in session.query(Book_db).filter(Book_db.title == title).all()]
+# tested
 def find_by_author(session, author):
-    return[book.title for book in session.query(Book).filter(Book.author.lower() == author.lower()).all()]
-
+    return[book.title for book in session.query(Book_db).filter(Book_db.author == author).all()]
+# tested
 def find_by_genre(session, genre):
-  return [book.title for book in session.query(Book).filter(Book.genre.lower() == genre.lower()).all()]
-
+  return [book.title for book in session.query(Book_db).filter(Book_db.genre == genre).all()]
+# tested
 def find_by_owner(session, owner):
-    return [book.title for book in session.query(Book).filter(Book.owner == owner).all()]
-
+    return [book.title for book in session.query(Book_db).filter(Book_db.owner_id == owner).all()]
+# tested
 def find_by_rating(session, rating):
-    return [book.title for book in session.query(Book).filter(Book.rating >= rating).all()]
+    return [(book.id,book.title, book.rating) for book in session.query(Book_db).filter(Book_db.rating >= rating).all()]
+#tested
+def find_reviews_by_book(session, title):
+    return[(review.book_title,review.score, review.comment) for review in session.query(Review_db).filter(Review_db.book_title == title.title()).all()]
 
-def get_all_user_reviews(session, user):
-    return [(review.title, review.score,review.comment) for review in session.query(Review,Book
-                                                                    ).filter(Review.user_id == user.id
-                                                                    ).filter(Review.book_id == Book.id
-                                                                    ).all()]
+#UPDATE FUNCTIONS
+#UPDATES the review in db (tested )
+def edit_review(session, review_id, score, comment):
+    session.query(Review_db).filter(Review_db.id == review_id).update({'score': score, 'comment': comment})
+    session.commit()
+#UPDATES the owner_id to the user's id and makes it unstocked (tested)
+def checkout(session, user, book_id):
+    session.query(Book_db).filter(Book_db.id == book_id).update({'owner_id': user, 'stocked':False})
+    session.commit()
+#UPDATES the owner_id to None and changes the stocked value (tested)
+def restock(session,book_id):
+     session.query(Book_db).filter(Book_db.id == book_id).update({'owner_id': None, 'stocked': True})
 
-def find_reviews_by_book(session, book):
-    return[(review.score, review.comment) for review in session.query(Review).filter(Book.id == book.id).all()]
-
-def checkout(session, user, book):
-    session.query(Book).filter(Book.id == book.id).update({'owner': user.id, 'stocked':False})
+# DELETE FUNCTIONS
+#DELETES account info from db (tested)
+def delete_account(session, user_id):
+    session.delete(session.query(User_db).filter(User_db.id == user_id).one())
+    session.commit()
+#DELETES review from db (tested)
+def delete_review(session, review_id):
+    session.delete(session.query(Review_db).filter(Review_db.id == review_id).one())
     session.commit()
 
-def restock(session,book):
-     session.query(Book).filter(Book.id == book.id).update({'owner': None, 'stocked': True})
 
 
+#-------------- TESTING ZONE -------------------------
