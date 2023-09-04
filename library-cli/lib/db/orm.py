@@ -31,7 +31,7 @@ class Book_db(Base):
     genre = Column(String)
     stocked = Column(Boolean,default=True)
     owner_id = Column(Integer,ForeignKey('users.id'), default=0)
-    rating = Column(Integer)
+    rating = Column(Integer, default=0)
     owner = relationship('User_db', back_populates= 'user_books')
     book_reviews = relationship('Review_db', back_populates= 'books')
 
@@ -70,31 +70,35 @@ def find_user(session, name):
     return(user.username, user.password, user.id)
 #gets attributes of ALL books (tested)
 def get_all_books(session):
-    return [(book.title, book.author, book.genre, book.rating) for book in session.query(Book_db).all()]
+    return [(book.id,book.title, book.author, book.genre, book.rating) for book in session.query(Book_db).all()]
 #gets all books that are in stock (tested)
 def get_books_in_stock(session):
-    return[(book.title, book.author, book.genre, book.rating) for book in session.query(Book_db).filter(Book_db.stocked == True).all()]
+    return[(book.id,book.title, book.author, book.genre, book.rating) for book in session.query(Book_db).filter(Book_db.stocked == True).all()]
 #gets attributes of ALL reviews (tested)
 def get_all_reviews(session):
     return [(review.book_title, review.score, review.comment) for review in session.query(Review_db).all()]
 # gets all reviews based on the user's id (tested)
 def get_all_user_reviews(session, user_id):
     return [(review.book_title, review.score,review.comment) for review in session.query(Review_db).filter(Review_db.user_id == user_id).all()]
+#returns a book object based on its id  ⭐
+def find_book_by_id(session, id):
+    b = session.query(Book_db).filter(Book_db.id == id).one()
+    return b
 # tested
 def find_by_title(session, title):
-    return [book.title for book in session.query(Book_db).filter(Book_db.title == title).all()]
+    return [(book.id,book.title, book.author, book.genre, book.rating) for book in session.query(Book_db).filter(Book_db.title == title).all()]
 # tested
 def find_by_author(session, author):
-    return[book.title for book in session.query(Book_db).filter(Book_db.author == author).all()]
+    return[(book.id,book.title, book.author, book.genre, book.rating) for book in session.query(Book_db).filter(Book_db.author == author).all()]
 # tested
 def find_by_genre(session, genre):
-  return [book.title for book in session.query(Book_db).filter(Book_db.genre == genre).all()]
+  return [(book.id,book.title, book.author, book.genre, book.rating) for book in session.query(Book_db).filter(Book_db.genre == genre).all()]
 # tested
 def find_by_owner(session, owner):
-    return [book.title for book in session.query(Book_db).filter(Book_db.owner_id == owner).all()]
+    return [(book.id,book.title, book.author, book.genre, book.rating) for book in session.query(Book_db).filter(Book_db.owner_id == owner).all()]
 # tested
 def find_by_rating(session, rating):
-    return [(book.id,book.title, book.rating) for book in session.query(Book_db).filter(Book_db.rating >= rating).all()]
+    return [(book.id,book.title, book.author, book.genre, book.rating) for book in session.query(Book_db).filter(Book_db.rating >= rating).all()]
 #tested
 def find_reviews_by_book(session, title):
     return[(review.book_title,review.score, review.comment) for review in session.query(Review_db).filter(Review_db.book_title == title.title()).all()]
@@ -105,13 +109,19 @@ def edit_review(session, review_id, score, comment):
     session.query(Review_db).filter(Review_db.id == review_id).update({'score': score, 'comment': comment})
     session.commit()
 #UPDATES the owner_id to the user's id and makes it unstocked (tested)
-def checkout(session, user, book_id):
-    session.query(Book_db).filter(Book_db.id == book_id).update({'owner_id': user, 'stocked':False})
+def checkout(session, user_id, book_id):
+    session.query(Book_db).filter(Book_db.id == book_id).update({'owner_id': user_id, 'stocked':False})
     session.commit()
 #UPDATES the owner_id to None and changes the stocked value (tested)
 def restock(session,book_id):
      session.query(Book_db).filter(Book_db.id == book_id).update({'owner_id': None, 'stocked': True})
+     session.commit()
 
+def update_score(session,book_id):
+    scores =[r.score for r in session.query(Review_db).filter(Review_db.book_id == book_id).all()]
+    scores = int(sum(scores)/len(scores))
+    session.query(Book_db).filter(Book_db.id == book_id).update({'rating':scores})
+    session.commit()
 # DELETE FUNCTIONS
 #DELETES account info from db (tested)
 def delete_account(session, user_id):
@@ -125,3 +135,4 @@ def delete_review(session, review_id):
 
 
 #-------------- TESTING ZONE -------------------------
+update_score(session,4)

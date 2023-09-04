@@ -83,7 +83,7 @@ class Book:
         if self.scores==[]:
             self.rating = 0
         else:
-            self.rating = round(sum(self.scores)/len(self.scores), 1)
+            self.rating = round(sum(self.scores)/len(self.scores))
         return self.rating
     def checkout(self,id):
         self.stocked = False
@@ -160,5 +160,3 @@ class Review:
         fget= _get_comment,
         fset= _set_comment
     )
-
-#Note: How to find name of book's owner: list(User.users.keys())[BOOKHERE.owner -1])
