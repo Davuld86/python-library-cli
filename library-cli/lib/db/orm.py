@@ -64,8 +64,8 @@ def save_reviews(session, review):
 #gets the username and password of ALL users (tested)
 def get_all_users(session):
     return[(user.username, user.password) for user in session.query(User_db).all()]
-#gets a specific user, DOES NOT output a list (tested)
-def find_user(session, name):
+#gets a specific user, given a username DOES NOT output a list (tested)
+def find_user_by_username(session, name):
     user = session.query(User_db).filter(User_db.username == name).one()
     return(user.username, user.password, user.id)
 #gets attributes of ALL books (tested)
@@ -76,10 +76,13 @@ def get_books_in_stock(session):
     return[(book.id,book.title, book.author, book.genre, book.rating) for book in session.query(Book_db).filter(Book_db.stocked == True).all()]
 #gets attributes of ALL reviews (tested)
 def get_all_reviews(session):
-    return [(review.book_title, review.score, review.comment) for review in session.query(Review_db).all()]
+    return [(review.id,review.book_title, review.score, review.comment, review.user_id) for review in session.query(Review_db).all()]
 # gets all reviews based on the user's id (tested)
 def get_all_user_reviews(session, user_id):
-    return [(review.book_title, review.score,review.comment) for review in session.query(Review_db).filter(Review_db.user_id == user_id).all()]
+    return [(review.id,review.book_title, review.score, review.comment, review.user_id) for review in session.query(Review_db).filter(Review_db.user_id == user_id).all()]
+def find_user_by_id(session, uid):
+    u=session.query(User_db).filter(User_db.id==uid).one()
+    return u
 #returns a book object based on its id  ⭐
 def find_book_by_id(session, id):
     b = session.query(Book_db).filter(Book_db.id == id).one()
@@ -101,8 +104,14 @@ def find_by_rating(session, rating):
     return [(book.id,book.title, book.author, book.genre, book.rating) for book in session.query(Book_db).filter(Book_db.rating >= rating).all()]
 #tested
 def find_reviews_by_book(session, title):
-    return[(review.book_title,review.score, review.comment) for review in session.query(Review_db).filter(Review_db.book_title == title.title()).all()]
+    return[(review.id,review.book_title, review.score, review.comment, review.user_id) for review in session.query(Review_db).filter(Review_db.book_title == title.title()).all()]
 
+def find_reviews_by_id(session, rid):
+    r = session.query(Review_db).filter(Review_db.id==rid).one()
+    return r
+
+def find_reviews_by_score(session,sc):
+    return[(review.id,review.book_title, review.score, review.comment, review.user_id) for review in session.query(Review_db).filter(Review_db.score == sc).all()]
 #UPDATE FUNCTIONS
 #UPDATES the review in db (tested )
 def edit_review(session, review_id, score, comment):
@@ -135,4 +144,4 @@ def delete_review(session, review_id):
 
 
 #-------------- TESTING ZONE -------------------------
-update_score(session,4)
+
