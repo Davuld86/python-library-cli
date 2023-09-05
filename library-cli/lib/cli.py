@@ -5,7 +5,7 @@ Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 session = Session()
 
-welcome()
+
 def start():
     while True:
         i = input('What would you like to do? \n'
@@ -27,6 +27,8 @@ def start():
                 donate_book()
                 start()
             case '4':
+                print('Goodbye')
                 break
 
+welcome()
 start()

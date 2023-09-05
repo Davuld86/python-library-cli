@@ -24,7 +24,7 @@ def welcome():
 
 # checks the username & password against the dictionary of users to login ⭐
 def login():
-    print('*** Login:\n Type "exit" to quit ***')
+    print('__________Login____________\n Type "exit" to quit')
     username = input('Enter username:  ')
     if username == 'exit':
         return 0
@@ -206,8 +206,8 @@ def display_book_data(book):
         match p:
             case '1':
                 print(f'{book.title} was returned, thank you. ')
-                restock(session, book)
-                display_book_list(c.last_list)
+                restock(session, book.id)
+                main_menu()
             case '2':
                 if usercheck(c.user_id,book.id)==1:
                     write_review(book)
@@ -226,6 +226,7 @@ def display_book_data(book):
             case '1':
                 print(f'{book.title} has been checked out. ')
                 checkout(session,c.user_id,book.id)
+                press_enter()
                 main_menu()
             case '2':
                 if usercheck(c.user_id,book.id)==1:
@@ -246,7 +247,7 @@ def search_error(message,func):
         print("How'd you get here?")
 
 def usercheck(uid, bid):
-    x= session.query(Review_db).filter(Review_db.book_id==bid).one()
+    x= session.query(Review_db).filter(Review_db.book_id==bid).first()
     if x == None:
         return 1
     elif x.user_id == uid:
@@ -266,7 +267,7 @@ def display_review_list(reviews):
     else:
         display_review_data(find_reviews_by_id(session,i))
 
-#display review attributes of review object
+#display review attributes of review object⭐
 def display_review_data(review):
     x= find_user_by_id(session,review.user_id)
     print(
@@ -274,7 +275,6 @@ def display_review_data(review):
         f'Score: {"★"* review.score}{"☆"*(5-review.score)}\n'
         f'Review: {review.comment}\n'
         f'Created by: {x.username}\n'
-        f'id: {review.id}'
     )
     if review.user_id ==c.user_id:
         print('What would you like to do with this review?\n')
@@ -295,12 +295,16 @@ def display_review_data(review):
         if i == '' or  ' ':
             display_review_list(c.last_list)
 
-#DELETE review menu
+#DELETE review menu ⭐
 def delete_user_review(rid,rbid):
     i = input('Delete this review? (y/n)\n')
     if i.lower() == 'y' or i.lower()== 'yes':
         delete_review(session,rid)
         update_score(session,rbid)
+        print('Review deleted')
+        i=input('Press ENTER to continue')
+        if i== '' or ' ':
+            pass
     main_menu()
 
 #EDIT review menu ⭐
@@ -319,19 +323,19 @@ def check_out_book(user_id, book_id):
 
 #CREATES a book object ⭐
 def donate_book():
-    title = input("What's the book's title?")
+    title = input("What's the book's title?\n ")
     if title == '' or title== ' ':
-        print('Please input a valid title.')
+        print('Please input a valid title.\n ')
         return 0
     else:
         title.title()
-    author = input('Who was the author?')
+    author = input('Who was the author?\n ')
     if author == '' or author== ' ':
         print('Please input a valid name.')
         return 0
     else:
         author.title()
-    genre = input('What is the books genre?')
+    genre = input('What is the books genre?\n ')
     if genre == '' or genre==' ':
         print('Please input a valid genre.')
         return 0
@@ -355,7 +359,13 @@ def write_review(book):
         r = Review_db(score=score,comment=comment,user_id=c.user_id,book_id=book.id, book_title= book.title)
         save_reviews(session, r)
         update_score(session,book.id)
+        print('Review submitted!')
+        press_enter()
         return 1
-
+#does nothing, more user interaction.⭐
+def press_enter():
+    i=input('Press ENTER to continue.')
+    if i== '' or ' ':
+        pass
 #-----------------------TESTING ZONE DO NOT CROSS-----------------------------------
-main_menu()
+
