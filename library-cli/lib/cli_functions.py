@@ -112,7 +112,7 @@ def search_books():
 
         case '2':
             title = input('Please enter a title.  ')
-            title = title.title()
+            title = str(title.title())
             title_l = find_by_title(session,title)
             if title_l !=[]:
                 c.last_list=title_l
@@ -342,6 +342,8 @@ def donate_book():
     else:
         n_book = Book_db(title=title, author=author, genre=genre)
         save_books(session, n_book)
+        print(f'{title} was donated to the Inkwell Library, thank you!')
+        press_enter()
         return 1
 
 #CREATES a review object⭐

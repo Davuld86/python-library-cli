@@ -17,7 +17,8 @@ def start():
         match i:
             case '1':
                 if login() == 1:
-                    main_menu()
+                    if main_menu()==1:
+                        start()
                 else:
                     start()
             case '2':

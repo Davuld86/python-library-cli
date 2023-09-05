@@ -89,7 +89,7 @@ def find_book_by_id(session, id):
     return b
 # tested
 def find_by_title(session, title):
-    return [(book.id,book.title, book.author, book.genre, book.rating) for book in session.query(Book_db).filter(Book_db.title in title).all()]
+    return [(book.id,book.title, book.author, book.genre, book.rating) for book in session.query(Book_db).filter(Book_db.title == title).all()]
 # tested
 def find_by_author(session, author):
     return[(book.id,book.title, book.author, book.genre, book.rating) for book in session.query(Book_db).filter(Book_db.author == author).all()]
