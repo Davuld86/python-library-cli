@@ -20,11 +20,7 @@ The Library CLI is a Python command-line tool that allows users to browse, check
    cd library-database-cli
    ```
 
-3. Install the required dependencies:
-
-   ```bash
-   pip install -r requirements.txt
-   ```
+3. Install the required dependencies
 
 4. Run the CLI:
 
