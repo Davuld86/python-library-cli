@@ -23,6 +23,31 @@ c = Current()
 def welcome():
     print('___________________: Welcome to the InkWell Library :__________________\n')
 
+def start():
+    while True:
+        i = input('What would you like to do? \n'
+                '1. Login  \n'
+                '2. Register  \n'
+                '3. Donate book \n'
+                '4. Exit  \n'
+                )
+        match i:
+            case '1':
+                if login() == 1:
+                    if main_menu()==1:
+                        start()
+                else:
+                    start()
+            case '2':
+                register()
+                start()
+            case '3':
+                donate_book()
+                start()
+            case '4':
+                print('Goodbye')
+                exit()
+
 # checks the username & password against the dictionary of users to login ⭐
 def login():
     print('__________Login____________\n Type "exit" to quit')
@@ -97,7 +122,8 @@ def main_menu():
             else:
                 search_error('You do not have any reviews',main_menu)
         case '5':
-            delete_account()
+            handle_delete()
+
         case '6':
             print('Please come again!')
             return 1
@@ -310,6 +336,18 @@ def delete_user_review(rid,rbid):
         i=input('Press ENTER to continue')
         if i== '' or ' ':
             pass
+    main_menu()
+#DELETES accout
+def handle_delete():
+    i = input('Delete your account? (y/n)\n')
+    if i == 'y':
+        p_check= input('Please enter password:\n')
+        if p_check == find_user_by_id(session,c.user_id).password:
+            print('Account deleted, sorry to see you go.')
+            delete_account(session, c.user_id)
+            start()
+        else:
+            search_error('Incorrect passowrd', main_menu)
     main_menu()
 
 #EDIT review menu ⭐
