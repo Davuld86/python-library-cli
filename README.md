@@ -17,17 +17,18 @@ The Library CLI is a Python command-line tool that allows users to browse, check
 2. Navigate to the project directory:
 
    ```bash
-   cd library-database-cli
+   cd library-database-cli/lib
    ```
 
 3. Install the required dependencies
-
+   ```bash
+   pip install sqlalchemy
+   ```
 4. Run the CLI:
 
    ```bash
    python library_cli.py
    ```
-
 ## Things you can do
 - Login / Register
 - Donate book: creates a new book object
@@ -41,7 +42,10 @@ The Library CLI is a Python command-line tool that allows users to browse, check
 
    ```bash
    What would you like to do?
-   1. Login  2. Register  3. Donate book  4. Exit
+  1. Login
+  2. Register
+  3. Donate book
+  4. Exit
    ```
 
 - Enteriing '2' to register prompts to enter a username and password:
