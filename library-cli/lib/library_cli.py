@@ -1,5 +1,7 @@
 from cli_functions import *
 
+class Base(DeclarativeBase):
+    pass
 engine = create_engine('sqlite:///library.sql', echo= True)
 Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
