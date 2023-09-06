@@ -31,7 +31,7 @@ def start():
                 start()
             case '4':
                 print('Goodbye')
-                break
+                exit()
 
 welcome()
 start()
