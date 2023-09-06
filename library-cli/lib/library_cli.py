@@ -1,5 +1,5 @@
 from cli_functions import *
-
+from seed import plant_seed
 class Base(DeclarativeBase):
     pass
 engine = create_engine('sqlite:///library.sql', echo= True)
@@ -11,10 +11,10 @@ session = Session()
 def start():
     while True:
         i = input('What would you like to do? \n'
-                '1. Login  '
-                '2. Register  '
-                '3. Donate book  '
-                '4. Exit  '
+                '1. Login  \n'
+                '2. Register  \n'
+                '3. Donate book \n'
+                '4. Exit  \n'
                 )
         match i:
             case '1':

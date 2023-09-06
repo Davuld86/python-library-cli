@@ -1,4 +1,5 @@
 from db.orm import *
+seed_planted = True
 #users
 users = [
     User_db(id=1, username="coding_ninja", password="secret123"),
@@ -50,10 +51,12 @@ reviews = [
 ]
 
 def plant_seed():
-    for user in users:
-        save_users(session,user)
-    for book in books:
-        save_books(session,book)
-    for review in reviews:
-        save_reviews(session,review)
-        update_score(session,review.book_id)
+    if seed_planted == False:
+        for user in users:
+            save_users(session,user)
+        for book in books:
+            save_books(session,book)
+        for review in reviews:
+            save_reviews(session,review)
+            update_score(session,review.book_id)
+        seed_planted = True
