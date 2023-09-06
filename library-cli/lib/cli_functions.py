@@ -339,6 +339,12 @@ def delete_user_review(rid,rbid):
     main_menu()
 #DELETES accout
 def handle_delete():
+    ubl = find_by_owner(session, c.user_id)
+    if ubl != []:
+        print('You have these books checked out:\n')
+        for book in ubl:
+            print(f'{book[0]}. {book[1]}\n')
+        search_error('You cannot delete your account whiile you still have books checked out.\n', main_menu)
     i = input('Delete your account? (y/n)\n')
     if i == 'y':
         p_check= input('Please enter password:\n')
