@@ -28,10 +28,7 @@ The Library CLI is a Python command-line tool that allows users to browse, check
    python library_cli.py
    ```
 
-## Usage
-- Guided menu's allow you to easily perform all functions.
-
-## Functions
+## Things you can do
 - Login / Register
 - Donate book: creates a new book object
 - Search books: searches the books by different attributes

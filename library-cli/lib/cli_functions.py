@@ -1,8 +1,7 @@
-from db.objects import * 
+from db.objects import *
 from db.orm import *
 
-
-engine = create_engine('sqlite:///library.sql', echo= True)
+engine = create_engine('sqlite:///library.sql', echo= False)
 Base.metadata.create_all(engine)
 
 Session = sessionmaker(bind=engine)
@@ -34,7 +33,10 @@ def login():
     if password == 'exit':
         return 0
     info = find_user_by_username(session, username)
-    if info[0]==username and info[1] == password:
+    if info is None:
+        print('Username/Password incorrect')
+        return 0
+    elif info[0]==username and info[1] == password:
         print(f'Welcome back, {username}!')
         User.append_to_log(info[2])
         c.user_id = info[2]
@@ -89,8 +91,11 @@ def main_menu():
         case '4':
             #url > user review list
             url = get_all_user_reviews(session, c.user_id)
-            c.last_list = url
-            display_review_list(url)
+            if url !=[]:
+                c.last_list = url
+                display_review_list(url)
+            else:
+                search_error('You do not have any reviews',main_menu)
         case '5':
             delete_account()
         case '6':
@@ -113,7 +118,7 @@ def search_books():
             display_book_list(get_books_in_stock(session))
 
         case '2':
-            title = input('Please enter a title.  ')
+            title = input('Please enter a title.  \n')
             title = str(title.title())
             title_l = find_by_title(session,title)
             if title_l !=[]:
@@ -123,23 +128,21 @@ def search_books():
                 search_error('No books with that title found!',search_books)
 
         case '3':
-            author = input('Please enter an author.  ')
+            author = input('Please enter an author.  \n')
             author_l =find_by_author(session,author.title())
             if author_l!=[]:
                 c.last_list=author_l
                 display_book_list(author_l)
-
             else:
                 search_error('No books with that author found!',search_books)
         case '4':
-            genre = input('Please input a genre')
+            genre = input('Please input a genre\n')
             genre_l = find_by_genre(session,genre)
-            if genre_l is not []:
+            if genre_l != []:
                 c.last_list=genre_l
                 display_book_list(genre_l)
             else:
                 search_error('No books in that genre found!',search_books)
-
         case '5':
             rating = input('Please input the minimum rating')
             rlst = find_by_rating(session,int(rating))
@@ -172,7 +175,7 @@ def search_reviews():
             else:
                 search_error('No reviews with that book title found!',search_reviews)
         case '3':
-            score = input('Please enter the score')
+            score = input('Please enter the score:  ')
             score_l = (find_reviews_by_score(session, score))
             if score_l != []:
                 c.last_list = score_l

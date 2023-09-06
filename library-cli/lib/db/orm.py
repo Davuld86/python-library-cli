@@ -7,7 +7,7 @@ from sqlalchemy.orm import sessionmaker
 class Base(DeclarativeBase):
     pass
 
-engine = create_engine('sqlite:///library.sql', echo= True)
+engine = create_engine('sqlite:///library.sql', echo= False)
 Base.metadata.create_all(engine)
 
 Session = sessionmaker(bind=engine)
@@ -66,8 +66,8 @@ def get_all_users(session):
     return[(user.username, user.password) for user in session.query(User_db).all()]
 #gets a specific user, given a username DOES NOT output a list (tested)
 def find_user_by_username(session, name):
-    user = session.query(User_db).filter(User_db.username == name).one()
-    return(user.username, user.password, user.id)
+    user = session.query(User_db).filter(User_db.username == name).first()
+    return(user.username, user.password, user.id) if user is not None else None
 #gets attributes of ALL books (tested)
 def get_all_books(session):
     return [(book.id,book.title, book.author, book.genre, book.rating) for book in session.query(Book_db).all()]
