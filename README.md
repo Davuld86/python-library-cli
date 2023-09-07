@@ -17,12 +17,13 @@ The Library CLI is a Python command-line tool that allows users to browse, check
 2. Navigate to the project directory:
 
    ```bash
-   cd library-database-cli/lib
+   python-library-cli/library-cli/lib
    ```
 
-3. Install the required dependencies
+3. Install the required dependencies using pipenv
    ```bash
-   pip install sqlalchemy
+   pipenv install
+   pipenv shell
    ```
 4. Run the CLI:
 
