@@ -9,13 +9,9 @@ session = Session()
 
 # this helps to easily keep track of data
 class Current():
-    def __init__(self, user='ben', user_id= 2, book = None, book_id = 0, review= None, review_id=0):
+    def __init__(self, user='ben', user_id= 2):
         self.username=user
         self.user_id = user_id
-        self.book = book
-        self.book_id = book_id
-        self.review = review
-        self.review_id = review_id
         self.last_list = None
 c = Current()
 
@@ -47,6 +43,8 @@ def start():
             case '4':
                 print('Goodbye')
                 exit()
+            case '_':
+                search_error('invalid input', start)
 
 # checks the username & password against the dictionary of users to login ⭐
 def login():
@@ -128,6 +126,9 @@ def main_menu():
             print('Please come again!')
             start()
 
+        case '_':
+            search_error('invalid input', main_menu)
+
 #Menu to search through all the books⭐
 def search_books():
     i = input('What would you like to search the books by?  \n'
@@ -179,6 +180,9 @@ def search_books():
                 search_error('No books with that rating found!',search_books)
         case '6':
             main_menu()
+        case '_':
+            search_error('invalid input', search_books)
+
 
 # Menu to search reviews⭐
 def search_reviews():
@@ -210,6 +214,8 @@ def search_reviews():
                 search_error('No reviews with that score found!', search_reviews)
         case '4':
             main_menu()
+        case '_':
+            search_error('invalid input', search_reviews)
 
 #displays all books that comes from the SQL database⭐
 def display_book_list(books):
@@ -291,7 +297,8 @@ def usercheck(uid, bid):
 def display_review_list(reviews):
     for review in reviews:
         x= find_user_by_id(session,review[4])
-        print(f'{review[0]}. Book: {review[1]}, Score:{"★"* review[2]}{"☆"*(5-review[2])}, Created by: {x.username}')
+        u_name = x.username if x is not None else 'Deleted User'
+        print(f'{review[0]}. Book: {review[1]}, Score:{"★"* review[2]}{"☆"*(5-review[2])}, Created by: {u_name}')
     i = input('Please input the number of the book you would like to choose. Press ENTER to go back.  ')
     if i== '' or i== ' ' or i=='0':
         main_menu()
@@ -301,11 +308,12 @@ def display_review_list(reviews):
 #display review attributes of review object⭐
 def display_review_data(review):
     x= find_user_by_id(session,review.user_id)
+    u_name = x.username if x is not None else 'Deleted User'
     print(
         f'Book: {review.book_title}\n'
         f'Score: {"★"* review.score}{"☆"*(5-review.score)}\n'
         f'Review: {review.comment}\n'
-        f'Created by: {x.username}\n'
+        f'Created by: {u_name}\n'
     )
     if review.user_id ==c.user_id:
         print('What would you like to do with this review?\n')
@@ -354,7 +362,6 @@ def handle_delete():
             start()
         else:
             search_error('Incorrect passowrd', main_menu)
-    main_menu()
 
 #EDIT review menu ⭐
 def edit_user_review(rid,rbid):

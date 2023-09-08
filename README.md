@@ -21,11 +21,16 @@ The Library CLI is a Python command-line tool that allows users to browse, check
    ```
 
 3. Install the required dependencies using pipenv
+
    ```bash
    pipenv install
    pipenv shell
    ```
-4. Run the CLI:
+4. Run the seed if library.sql does not exist
+   ```bash
+   python3 seed.py
+   ```
+5. Run the CLI:
 
    ```bash
    python library_cli.py

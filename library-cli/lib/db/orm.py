@@ -81,7 +81,7 @@ def get_all_reviews(session):
 def get_all_user_reviews(session, user_id):
     return [(review.id,review.book_title, review.score, review.comment, review.user_id) for review in session.query(Review_db).filter(Review_db.user_id == user_id).all()]
 def find_user_by_id(session, uid):
-    u=session.query(User_db).filter(User_db.id==uid).one()
+    u=session.query(User_db).filter(User_db.id==uid).first()
     return u
 #returns a book object based on its id  ⭐
 def find_book_by_id(session, id):
