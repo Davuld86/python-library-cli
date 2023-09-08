@@ -126,7 +126,7 @@ def main_menu():
 
         case '6':
             print('Please come again!')
-            return 1
+            start()
 
 #Menu to search through all the books⭐
 def search_books():
