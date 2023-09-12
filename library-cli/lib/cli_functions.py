@@ -43,7 +43,7 @@ def start():
             case '4':
                 print('Goodbye')
                 exit()
-            case '_':
+            case _:
                 search_error('invalid input', start)
 
 # checks the username & password against the dictionary of users to login ⭐
@@ -64,9 +64,8 @@ def login():
         User.append_to_log(info[2])
         c.user_id = info[2]
         return 1
-    else:
-        print('Username/Password incorrect')
-        return 0
+    print('Username/Password incorrect')
+    return 0
 
 # CREATES a new user class and saves it to SQL (tested)⭐
 def register():
@@ -126,7 +125,7 @@ def main_menu():
             print('Please come again!')
             start()
 
-        case '_':
+        case _:
             search_error('invalid input', main_menu)
 
 #Menu to search through all the books⭐
@@ -180,7 +179,7 @@ def search_books():
                 search_error('No books with that rating found!',search_books)
         case '6':
             main_menu()
-        case '_':
+        case _:
             search_error('invalid input', search_books)
 
 
@@ -214,7 +213,7 @@ def search_reviews():
                 search_error('No reviews with that score found!', search_reviews)
         case '4':
             main_menu()
-        case '_':
+        case _:
             search_error('invalid input', search_reviews)
 
 #displays all books that comes from the SQL database⭐
