@@ -180,7 +180,7 @@ def search_books():
         case '6':
             main_menu()
         case _:
-            search_error('invalid input', search_books)
+            search_error('Please input a valid number', search_books)
 
 
 # Menu to search reviews⭐
@@ -214,15 +214,19 @@ def search_reviews():
         case '4':
             main_menu()
         case _:
-            search_error('invalid input', search_reviews)
+            search_error('Please input a valid number', search_reviews)
 
 #displays all books that comes from the SQL database⭐
 def display_book_list(books):
     for book in books:
         print(f'{book[0]}. {book[1]}, Rating: {"Unrated" if book[4] == None else"★"* book[4]}{""if book[4]==None else"☆"*(5-book[4])} \n')
-    i = input('Please input the number of the book you would like to choose. Press ENTER to go back.  ')
-    if i== '' or i== ' ' or i=='0':
-        main_menu()
+    i = input('Please input the number of the book you would like to choose. Press ENTER to go back.\n')
+    if i=='':
+         main_menu()
+    elif find_book_by_id(session,i)==None:
+        print('Please input a valid number\n')
+        i=input('Press any key to go back\n')
+        display_book_list(c.last_list)
     else:
         display_book_data(find_book_by_id(session,i))
 
@@ -237,7 +241,8 @@ def display_book_data(book):
         p = input('What would you like to do with this book?  \n'
                 f'1. Return book\n'
                 f'2. Write review\n'
-                f'3. Go back\n'
+                f'3. View reviews of this book\n'
+                f'4. Go back\n'
                 )
         match p:
             case '1':
@@ -251,12 +256,23 @@ def display_book_data(book):
                 else:
                     display_book_list(c.last_list)
             case '3':
+                l = find_reviews_by_book(session, book.title)
+                c.last_list=l
+                display_review_list(l)
+            case '4':
                 display_book_list(c.last_list)
+            case _:
+                print('Please input a valid number\n')
+                i=input('Press any key to go back\n')
+                if i=='' or ' ':
+                    display_book_data(book)
+
     else:
         i = input('What would you like to do with this book?   \n'
                 f'1. Check out book\n'
                 f'2. Write review\n'
-                f'3. Go back\n'
+                f'3. View reviews of this book\n'
+                f'4. Go back\n'
                 )
         match i:
             case '1':
@@ -272,7 +288,17 @@ def display_book_data(book):
                     display_book_list(c.last_list)
                 main_menu()
             case '3':
+                l = find_reviews_by_book(session, book.title)
+                c.last_list =l
+                display_review_list(l)
+            case '4':
                 display_book_list(c.last_list)
+            case _:
+                print('Please input a valid number')
+                i=input('Press any key to go back\n')
+                if i=='' or ' ':
+                    display_book_data(book)
+
 #handles no books/reviews found ⭐
 def search_error(message,func):
     print(f'{message}\n')
@@ -298,9 +324,14 @@ def display_review_list(reviews):
         x= find_user_by_id(session,review[4])
         u_name = x.username if x is not None else 'Deleted User'
         print(f'{review[0]}. Book: {review[1]}, Score:{"★"* review[2]}{"☆"*(5-review[2])}, Created by: {u_name}')
-    i = input('Please input the number of the book you would like to choose. Press ENTER to go back.  ')
+    i = input('Please input the number of the book you would like to choose. Press ENTER to go back.\n')
     if i== '' or i== ' ' or i=='0':
         main_menu()
+    elif find_reviews_by_id(session,i)==None:
+        print('Please input a valid number')
+        i=input('Press any key to go back\n')
+        if i=='' or ' ':
+            display_review_list(c.last_list)
     else:
         display_review_data(find_reviews_by_id(session,i))
 
@@ -328,6 +359,11 @@ def display_review_data(review):
                 delete_user_review(review.id, review.book_id)
             case '3':
                 display_review_list(c.last_list)
+            case _:
+                print('Please input a valid number')
+                i=input('Press any key to go back\n')
+                if i=='' or ' ':
+                    display_review_data(review)
     else:
         i = input('Press ENTER to go back\n')
         if i == '' or  ' ':
@@ -341,8 +377,6 @@ def delete_user_review(rid,rbid):
         update_score(session,rbid)
         print('Review deleted')
         i=input('Press ENTER to continue')
-        if i== '' or ' ':
-            pass
     main_menu()
 #DELETES accout
 def handle_delete():
@@ -353,7 +387,7 @@ def handle_delete():
             print(f'{book[0]}. {book[1]}\n')
         search_error('You cannot delete your account whiile you still have books checked out.\n', main_menu)
     i = input('Delete your account? (y/n)\n')
-    if i == 'y':
+    if i == 'y' or i=='yes':
         p_check= input('Please enter password:\n')
         if p_check == find_user_by_id(session,c.user_id).password:
             print('Account deleted, sorry to see you go.')

@@ -85,7 +85,7 @@ def find_user_by_id(session, uid):
     return u
 #returns a book object based on its id  ⭐
 def find_book_by_id(session, id):
-    b = session.query(Book_db).filter(Book_db.id == id).one()
+    b = session.query(Book_db).filter(Book_db.id == id).first()
     return b
 # tested
 def find_by_title(session, title):
@@ -107,7 +107,7 @@ def find_reviews_by_book(session, title):
     return[(review.id,review.book_title, review.score, review.comment, review.user_id) for review in session.query(Review_db).filter(Review_db.book_title == title.title()).all()]
 
 def find_reviews_by_id(session, rid):
-    r = session.query(Review_db).filter(Review_db.id==rid).one()
+    r = session.query(Review_db).filter(Review_db.id==rid).first()
     return r
 
 def find_reviews_by_score(session,sc):
@@ -134,11 +134,11 @@ def update_score(session,book_id):
 # DELETE FUNCTIONS
 #DELETES account info from db (tested)
 def delete_account(session, user_id):
-    session.delete(session.query(User_db).filter(User_db.id == user_id).one())
+    session.delete(session.query(User_db).filter(User_db.id == user_id).first())
     session.commit()
 #DELETES review from db (tested)
 def delete_review(session, review_id):
-    session.delete(session.query(Review_db).filter(Review_db.id == review_id).one())
+    session.delete(session.query(Review_db).filter(Review_db.id == review_id).first())
     session.commit()
 
 
